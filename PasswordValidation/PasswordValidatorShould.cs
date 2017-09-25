@@ -14,61 +14,30 @@ namespace PasswordValidation
     // at least one sign character
 
     // each validation counts one point, at least has to be 3 points
+
+    public class ObjectMother
+    {
+        public static PasswordValidator CreatePasswordValidator()
+        {
+            return new PasswordValidator("+-/&%");
+        }
+    }
+
     public class PasswordValidatorShould
     {
-        private readonly PasswordValidator _passwordValidator;
+        private readonly PasswordValidator _passwordValidator = ObjectMother.CreatePasswordValidator();
 
-        public PasswordValidatorShould()
-        {
-            _passwordValidator = new PasswordValidator();
-        }
 
-        [Fact]
-        public void validate_that_password_that_has_not_at_least_8_characters_long_is_not_valid()
+        [Theory]
+        [InlineData("Aa1", true)]
+        [InlineData("AA1", false)]
+        [InlineData("ANALYTICALWAYS", false)]
+        [InlineData("+a1", true)]
+        [InlineData(" ", false)]
+        public void validate_that_password_has_at_least_three_points_of_sum(string password, bool expected)
         {
-            var password = "Aa1";
             var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(false);
-        }
-
-        [Fact]
-        public void validate_that_password_that_has_not_at_least_one_uppercase_letter_is_not_valid()
-        {
-            var password = "analyticalways1";
-            var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(false);
-        }
-
-        [Fact]
-        public void validate_that_password_that_has_not_at_least_one_lowercase_letter_is_not_valid()
-        {
-            var password = "ANALYTICALWAYS1";
-            var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(false);
-        }
-
-        [Fact]
-        public void validate_that_password_that_has_not_at_least_one_number_is_not_valid()
-        {
-            var password = "aNALYTICALWAYS";
-            var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(false);
-        }
-
-        [Fact]
-        public void validate_that_password_that_has_not_at_least_one_sign_character_is_not_valid()
-        {
-            var password = "aNALYTICALW1YS";
-            var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(false);
-        }
-
-        [Fact]
-        public void validate_that_password_has_at_least_three_points_of_sum()
-        {
-            var password = "Aa1";
-            var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(true);
+            isValid.Should().Be(expected);
         }
     }
 
@@ -76,17 +45,14 @@ namespace PasswordValidation
     {
         private readonly string _allowedSigns;
 
-        public PasswordValidator() : this("+-/&%")
-        {
-
-        }
         public PasswordValidator(string allowedSigns)
         {
             _allowedSigns = allowedSigns;
         }
+
         public bool Validate(string password)
         {
-            int counter = 0;
+            var counter = 0;
             if (password.Length >= 8)
             {
                 counter++;
@@ -110,27 +76,12 @@ namespace PasswordValidation
             return counter >= 3;
         }
 
-        private bool HasSign(string password)
-        {
-            return password.Intersect(_allowedSigns).Any();
-        }
+        private bool HasSign(string password) => password.Intersect(_allowedSigns).Any();
 
-        private static bool HasNumber(string password)
-        {
-            var regex = new Regex(@"([0-9])+");
-            return regex.IsMatch(password);
-        }
+        private static bool HasNumber(string password) => new Regex(@"([0-9])+").IsMatch(password);
 
-        private static bool HasLowercaseLetter(string password)
-        {
-            var regex = new Regex(@"([a-z])+");
-            return regex.IsMatch(password);
-        }
+        private static bool HasLowercaseLetter(string password) => new Regex(@"([a-z])+").IsMatch(password);
 
-        private static bool HasUppercaseLetter(string password)
-        {
-            var regex = new Regex(@"([A-Z])+");
-            return regex.IsMatch(password);
-        }
+        private static bool HasUppercaseLetter(string password) => new Regex(@"([A-Z])+").IsMatch(password);
     }
 }
