@@ -33,6 +33,7 @@ namespace PasswordValidation
         [InlineData("AA1", false)]
         [InlineData("ANALYTICALWAYS", false)]
         [InlineData("+a1", true)]
+        [InlineData("#a1", false)]
         [InlineData(" ", false)]
         public void validate_that_password_has_at_least_three_points_of_sum(string password, bool expected)
         {
