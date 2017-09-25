@@ -66,11 +66,12 @@ namespace PasswordValidation
         [Fact]
         public void validate_that_password_has_at_least_three_points_of_sum()
         {
-            var password = "aNALYTICALWYS";
+            var password = "Aa1";
             var isValid = _passwordValidator.Validate(password);
-            isValid.Should().Be(false);
+            isValid.Should().Be(true);
         }
     }
+
     public class PasswordValidator
     {
         private readonly string _allowedSigns;
@@ -85,27 +86,28 @@ namespace PasswordValidation
         }
         public bool Validate(string password)
         {
-            if (password.Length < 8)
+            int counter = 0;
+            if (password.Length >= 8)
             {
-                return false;
+                counter++;
             }
-            if (!HasUppercaseLetter(password))
+            if (HasUppercaseLetter(password))
             {
-                return false;
+                counter++;
             }
-            if (!HasLowercaseLetter(password))
+            if (HasLowercaseLetter(password))
             {
-                return false;
+                counter++;
             }
-            if (!HasNumber(password))
+            if (HasNumber(password))
             {
-                return false;
+                counter++;
             }
-            if (!HasSign(password))
+            if (HasSign(password))
             {
-                return false;
+                counter++;
             }
-            return true;
+            return counter >= 3;
         }
 
         private bool HasSign(string password)
