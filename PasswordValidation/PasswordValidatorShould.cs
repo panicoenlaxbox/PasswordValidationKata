@@ -15,19 +15,9 @@ namespace PasswordValidation
 
     // each validation counts one point, at least has to be 3 points
 
-    public class ObjectMother
-    {
-        public static PasswordValidator CreatePasswordValidator()
-        {
-            return new PasswordValidator("+-/&%");
-        }
-    }
 
     public class PasswordValidatorShould
     {
-        private readonly PasswordValidator _passwordValidator = ObjectMother.CreatePasswordValidator();
-
-
         [Theory]
         [InlineData("Aa1", true)]
         [InlineData("AA1", false)]
@@ -37,9 +27,23 @@ namespace PasswordValidation
         [InlineData(" ", false)]
         public void validate_that_password_has_at_least_three_points_of_sum(string password, bool expected)
         {
-            var isValid = _passwordValidator.Validate(password);
+            var passwordValidator = new PasswordValidator("+-/&%");
+            var isValid = passwordValidator.Validate(password);
             isValid.Should().Be(expected);
         }
+    }
+
+    enum PasswordStrength
+    {
+        Weak,
+        Normal,
+        Strong
+    }
+
+    class PasswordValidatorResult
+    {
+        public bool IsValid { get; set; }
+        public PasswordStrength Strength { get; set; }
     }
 
     public class PasswordValidator
